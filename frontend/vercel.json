@@ -1,0 +1,9 @@
+
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://gestion-evenements-8uxz.onrender.com/api/:path*"
+    }
+  ]
+}
