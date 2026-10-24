@@ -399,9 +399,11 @@ function App() {
         if (field.staffOnly && !staff) delete payload[field.name]
       }
       if (active === 'reservations') {
-        delete payload.statut
         delete payload.client
-      }
+       if (!staff || !form.id) {
+       delete payload.statut
+  }
+}
       if (active === 'paiements' && form.id) {
         payload = { reference: form.values.reference, statut: form.values.statut }
       } else if (active === 'paiements' && !staff) {
@@ -862,7 +864,7 @@ function App() {
         {active !== 'dashboard' && active !== 'apropos' && (
           <section className="panel data-panel">
             <div className="module-header">
-              <div><p className="eyebrow">ESPACE ÉVÉNEMENTIEL</p><h2>{heading}</h2></div>
+              <div><p className="eyebrow">ESPACE ÉVÉNEMEcdNTIEL</p><h2>{heading}</h2></div>
               <form className="search-form" onSubmit={searchRecords}>
                 <input className="search-input" type="search" placeholder="Nom, date, statut…" aria-label="Rechercher dans la liste" value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} />
                 <button type="submit" className="icon-action search-action" aria-label="Rechercher" title="Rechercher" disabled={busy}><ActionIcon name="search" /></button>
