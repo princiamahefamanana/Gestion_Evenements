@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from 'react'
 import './App.css'
 
-const API_BASE = `http://${window.location.hostname}:8000`
+const API_BASE = import.meta.env.PROD ? '' : `http://${window.location.hostname}:8000`
 const ReservationStatusChart = lazy(() => import('./ReservationStatusChart.jsx'))
 
 function DashboardChart({ reservations }) {
