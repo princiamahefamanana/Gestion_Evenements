@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
 import './App.css'
+import About from './About.jsx'
 
 const API_BASE = import.meta.env.PROD ? '' : `http://${window.location.hostname}:8000`
 const ReservationStatusChart = lazy(() => import('./ReservationStatusChart.jsx'))
@@ -172,7 +173,7 @@ function localDateTime(date) {
   return local.toISOString().slice(0, 16)
 }
 
-function AuthPanel({ onLogin, onRegistered, error, setError }) {
+function AuthPanel({ onLogin, onRegistered, onAbout, error, setError }) {
   const params = new URLSearchParams(window.location.search)
   const [mode, setMode] = useState(() => params.has('uid') && params.has('token') ? 'reset' : 'login')
   const [busy, setBusy] = useState(false)
@@ -262,6 +263,11 @@ function AuthPanel({ onLogin, onRegistered, error, setError }) {
         )}
         {error && <p className="alert error" role="alert">{error}</p>}
         {message && <p className="alert success" role="status">{message}</p>}
+        {onAbout && (
+          <p className="login-about">
+            <button type="button" className="text-action" onClick={onAbout}>À propos</button>
+          </p>
+        )}
       </section>
     </main>
   )
@@ -280,6 +286,7 @@ function App() {
   const [searchDraft, setSearchDraft] = useState('')
   const [printError, setPrintError] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showAbout, setShowAbout] = useState(false)
 
   const staff = user?.role === 'admin' || user?.role === 'organizer' || user?.is_superuser
   const loadData = async (currentUser) => {
@@ -687,6 +694,8 @@ function App() {
     ? 'Vue d’ensemble'
     : active === 'dashboard'
       ? 'Tableau de bord'
+    : active === 'apropos'
+      ? 'À propos'
     : active === 'utilisateurs'
       ? 'Utilisateurs'
       : active === 'espaces' && staff
@@ -694,7 +703,8 @@ function App() {
         : config?.title
 
   if (!user) {
-    return <AuthPanel onLogin={(value) => authenticate(value, '')} onRegistered={(value) => authenticate(value, 'Votre compte client est prêt.')} error={error} setError={setError} />
+    if (showAbout) return <About standalone onBack={() => setShowAbout(false)} />
+    return <AuthPanel onLogin={(value) => authenticate(value, '')} onRegistered={(value) => authenticate(value, 'Votre compte client est prêt.')} onAbout={() => setShowAbout(true)} error={error} setError={setError} />
   }
 
   return (
@@ -715,6 +725,9 @@ function App() {
               Utilisateurs
             </button>
           ) : null}
+             <button type="button" className={`nav-item ${active === 'apropos' ? 'active' : ''}`} onClick={() => navigateTo('apropos')}>
+            À propos
+          </button>
         </nav>
         <div className="sidebar-user">
           <strong>{user.username}</strong>
@@ -844,7 +857,9 @@ function App() {
           </section>
         )}
 
-        {active !== 'dashboard' && (
+                {active === 'apropos' && <About />}
+
+        {active !== 'dashboard' && active !== 'apropos' && (
           <section className="panel data-panel">
             <div className="module-header">
               <div><p className="eyebrow">ESPACE ÉVÉNEMENTIEL</p><h2>{heading}</h2></div>
